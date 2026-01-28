@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSSL Cryptographic Operations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 OpenSSL Cryptographic Operations</h1>
+            <p class="subtitle">Secure RSA, SHA-512, Certificates, and Digital Signatures</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" onclick="showTab('keys', event)">Key Generation</button>
+            <button class="tab-button" onclick="showTab('hash', event)">Hashing</button>
+            <button class="tab-button" onclick="showTab('cert', event)">Certificates</button>
+            <button class="tab-button" onclick="showTab('sign', event)">Digital Signatures</button>
+        </nav>
+
+        <!-- Key Generation Section -->
+        <div id="keys-tab" class="tab-content active">
+            <h2>RSA Key Pair Generation</h2>
+            <div class="card">
+                <form id="key-gen-form">
+                    <div class="form-group">
+                        <label for="key-size">Key Size:</label>
+                        <select id="key-size" name="key_size">
+                            <option value="2048">2048 bits (Standard)</option>
+                            <option value="3072">3072 bits (Enhanced)</option>
+                            <option value="4096">4096 bits (Maximum)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Key Pair</button>
+                </form>
+
+                <div id="keys-result" class="result hidden">
+                    <div class="alert alert-warning">
+                        ⚠️ <strong>Security Warning:</strong> Never share your private key. Store it securely and delete it from this browser after downloading.
+                    </div>
+                    
+                    <div class="key-display">
+                        <h3>Public Key</h3>
+                        <textarea id="public-key" readonly></textarea>
+                        <button onclick="downloadKey('public-key', 'public_key.pem')" class="btn btn-secondary">Download Public Key</button>
+                    </div>
+
+                    <div class="key-display">
+                        <h3>Private Key</h3>
+                        <textarea id="private-key" readonly></textarea>
+                        <button onclick="downloadKey('private-key', 'private_key.pem')" class="btn btn-secondary">Download Private Key</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hashing Section -->
+        <div id="hash-tab" class="tab-content">
+            <h2>SHA-512 Hashing</h2>
+            
+            <div class="card">
+                <h3>Hash Text</h3>
+                <form id="hash-text-form">
+                    <div class="form-group">
+                        <label for="text-input">Enter Text:</label>
+                        <textarea id="text-input" name="text" rows="4" placeholder="Enter text to hash..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Hash Text</button>
+                </form>
+
+                <div id="hash-text-result" class="result hidden">
+                    <h4>SHA-512 Hash:</h4>
+                    <div class="hash-output">
+                        <code id="text-hash"></code>
+                    </div>
+                    <button onclick="copyToClipboard('text-hash', event)" class="btn btn-secondary">Copy Hash</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Hash File</h3>
+                <form id="hash-file-form">
+                    <div class="form-group">
+                        <label for="file-input">Select File:</label>
+                        <input type="file" id="file-input" name="file" required>
+                        <small>Maximum file size: 16MB</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Hash File</button>
+                </form>
+
+                <div id="hash-file-result" class="result hidden">
+                    <h4>File Information:</h4>
+                    <p><strong>Filename:</strong> <span id="file-name"></span></p>
+                    <p><strong>Size:</strong> <span id="file-size"></span> bytes</p>
+                    <h4>SHA-512 Hash:</h4>
+                    <div class="hash-output">
+                        <code id="file-hash"></code>
+                    </div>
+                    <button onclick="copyToClipboard('file-hash', event)" class="btn btn-secondary">Copy Hash</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Section -->
+        <div id="cert-tab" class="tab-content">
+            <h2>X.509 Certificate Creation</h2>
+            <div class="card">
+                <form id="cert-form">
+                    <div class="form-group">
+                        <label for="cert-common-name">Common Name (CN):</label>
+                        <input type="text" id="cert-common-name" name="common_name" value="localhost" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cert-country">Country (C):</label>
+                            <input type="text" id="cert-country" name="country" value="US" maxlength="2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cert-state">State/Province (ST):</label>
+                            <input type="text" id="cert-state" name="state" value="California" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cert-locality">Locality/City (L):</label>
+                            <input type="text" id="cert-locality" name="locality" value="San Francisco" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cert-organization">Organization (O):</label>
+                            <input type="text" id="cert-organization" name="organization" value="My Organization" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cert-validity">Validity Period (days):</label>
+                            <input type="number" id="cert-validity" name="validity_days" value="365" min="1" max="3650" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cert-key-size">Key Size:</label>
+                            <select id="cert-key-size" name="key_size">
+                                <option value="2048">2048 bits</option>
+                                <option value="3072">3072 bits</option>
+                                <option value="4096">4096 bits</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Generate Certificate</button>
+                </form>
+
+                <div id="cert-result" class="result hidden">
+                    <div class="alert alert-info">
+                        ℹ️ This is a self-signed certificate suitable for development and testing purposes.
+                    </div>
+
+                    <div class="key-display">
+                        <h3>Certificate</h3>
+                        <textarea id="certificate" readonly></textarea>
+                        <button onclick="downloadKey('certificate', 'certificate.pem')" class="btn btn-secondary">Download Certificate</button>
+                    </div>
+
+                    <div class="key-display">
+                        <h3>Private Key</h3>
+                        <textarea id="cert-private-key" readonly></textarea>
+                        <button onclick="downloadKey('cert-private-key', 'cert_private_key.pem')" class="btn btn-secondary">Download Private Key</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Signatures Section -->
+        <div id="sign-tab" class="tab-content">
+            <h2>Digital Signatures</h2>
+            
+            <div class="card">
+                <h3>Sign Message</h3>
+                <form id="sign-form">
+                    <div class="form-group">
+                        <label for="sign-message">Message to Sign:</label>
+                        <textarea id="sign-message" name="message" rows="4" placeholder="Enter message to sign..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sign-private-key">Private Key (PEM format):</label>
+                        <textarea id="sign-private-key" name="private_key" rows="8" placeholder="Paste your private key here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Sign Message</button>
+                </form>
+
+                <div id="sign-result" class="result hidden">
+                    <h4>Digital Signature (Base64):</h4>
+                    <div class="hash-output">
+                        <code id="signature"></code>
+                    </div>
+                    <button onclick="copyToClipboard('signature', event)" class="btn btn-secondary">Copy Signature</button>
+                    <button onclick="downloadSignature()" class="btn btn-secondary">Download Signature</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Verify Signature</h3>
+                <form id="verify-form">
+                    <div class="form-group">
+                        <label for="verify-message">Original Message:</label>
+                        <textarea id="verify-message" name="message" rows="4" placeholder="Enter original message..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="verify-signature">Signature (Base64):</label>
+                        <textarea id="verify-signature" name="signature" rows="4" placeholder="Paste signature here..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="verify-public-key">Public Key (PEM format):</label>
+                        <textarea id="verify-public-key" name="public_key" rows="8" placeholder="Paste public key here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Verify Signature</button>
+                </form>
+
+                <div id="verify-result" class="result hidden">
+                    <div id="verify-status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="error-message" class="alert alert-error hidden"></div>
+    </div>
+
+    <footer>
+        <p>🔒 OpenSSL Cryptographic Operations Demo | Educational Purpose Only</p>
+        <p><small>Remember: Never share private keys or use self-signed certificates in production without proper security measures.</small></p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
