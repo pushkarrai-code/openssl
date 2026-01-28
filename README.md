@@ -4,6 +4,7 @@ A comprehensive Python-based web application demonstrating OpenSSL cryptographic
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)
+![Cryptography](https://img.shields.io/badge/cryptography-42.0.4-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## 🌟 Features
@@ -361,7 +362,8 @@ docker run -p 5000:5000 openssl-crypto
 - **Backend:**
   - Python 3.8+
   - Flask 3.0.0 (Web framework)
-  - cryptography 41.0.7 (OpenSSL wrapper)
+  - cryptography 42.0.4 (OpenSSL wrapper - patched for security vulnerabilities)
+  - Werkzeug 3.0.3 (WSGI utility library)
 
 - **Frontend:**
   - HTML5
