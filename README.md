@@ -71,6 +71,20 @@ A comprehensive Python-based web application demonstrating OpenSSL cryptographic
    ```bash
    python app.py
    ```
+   
+   **Optional: Configure with environment variables:**
+   ```bash
+   # Enable debug mode (development only)
+   export FLASK_DEBUG=true
+   
+   # Bind to specific host (default: 0.0.0.0)
+   export FLASK_HOST=127.0.0.1
+   
+   # Change port (default: 5000)
+   export FLASK_PORT=8080
+   
+   python app.py
+   ```
 
 2. **Open your web browser and navigate to:**
    ```

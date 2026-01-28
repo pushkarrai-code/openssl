@@ -14,10 +14,10 @@
         </header>
 
         <nav class="tabs">
-            <button class="tab-button active" onclick="showTab('keys')">Key Generation</button>
-            <button class="tab-button" onclick="showTab('hash')">Hashing</button>
-            <button class="tab-button" onclick="showTab('cert')">Certificates</button>
-            <button class="tab-button" onclick="showTab('sign')">Digital Signatures</button>
+            <button class="tab-button active" onclick="showTab('keys', event)">Key Generation</button>
+            <button class="tab-button" onclick="showTab('hash', event)">Hashing</button>
+            <button class="tab-button" onclick="showTab('cert', event)">Certificates</button>
+            <button class="tab-button" onclick="showTab('sign', event)">Digital Signatures</button>
         </nav>
 
         <!-- Key Generation Section -->
@@ -75,7 +75,7 @@
                     <div class="hash-output">
                         <code id="text-hash"></code>
                     </div>
-                    <button onclick="copyToClipboard('text-hash')" class="btn btn-secondary">Copy Hash</button>
+                    <button onclick="copyToClipboard('text-hash', event)" class="btn btn-secondary">Copy Hash</button>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@
                     <div class="hash-output">
                         <code id="file-hash"></code>
                     </div>
-                    <button onclick="copyToClipboard('file-hash')" class="btn btn-secondary">Copy Hash</button>
+                    <button onclick="copyToClipboard('file-hash', event)" class="btn btn-secondary">Copy Hash</button>
                 </div>
             </div>
         </div>
@@ -201,7 +201,7 @@
                     <div class="hash-output">
                         <code id="signature"></code>
                     </div>
-                    <button onclick="copyToClipboard('signature')" class="btn btn-secondary">Copy Signature</button>
+                    <button onclick="copyToClipboard('signature', event)" class="btn btn-secondary">Copy Signature</button>
                     <button onclick="downloadSignature()" class="btn btn-secondary">Download Signature</button>
                 </div>
             </div>

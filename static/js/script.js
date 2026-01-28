@@ -1,5 +1,5 @@
 // Tab Navigation
-function showTab(tabName) {
+function showTab(tabName, event) {
     // Hide all tabs
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => tab.classList.remove('active'));
@@ -276,7 +276,7 @@ function downloadSignature() {
 }
 
 // Copy to Clipboard Function
-function copyToClipboard(elementId) {
+function copyToClipboard(elementId, event) {
     const element = document.getElementById(elementId);
     const text = element.textContent || element.value;
     

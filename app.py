@@ -68,8 +68,11 @@ def generate_keys():
             'key_size': key_size
         })
         
+    except ValueError as e:
+        return jsonify({'error': 'Invalid key size parameter'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Key generation error: {str(e)}')
+        return jsonify({'error': 'Failed to generate keys'}), 500
 
 
 @app.route('/api/hash-text', methods=['POST'])
@@ -101,7 +104,8 @@ def hash_text():
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Hash text error: {str(e)}')
+        return jsonify({'error': 'Failed to hash text'}), 500
 
 
 @app.route('/api/hash-file', methods=['POST'])
@@ -139,7 +143,8 @@ def hash_file():
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Hash file error: {str(e)}')
+        return jsonify({'error': 'Failed to hash file'}), 500
 
 
 @app.route('/api/create-certificate', methods=['POST'])
@@ -196,9 +201,9 @@ def create_certificate():
         ).serial_number(
             x509.random_serial_number()
         ).not_valid_before(
-            datetime.datetime.utcnow()
+            datetime.datetime.now(datetime.timezone.utc)
         ).not_valid_after(
-            datetime.datetime.utcnow() + datetime.timedelta(days=validity_days)
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=validity_days)
         ).add_extension(
             x509.SubjectAlternativeName([
                 x509.DNSName(common_name),
@@ -225,8 +230,11 @@ def create_certificate():
             'key_size': key_size
         })
         
+    except ValueError as e:
+        return jsonify({'error': 'Invalid certificate parameters'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Certificate creation error: {str(e)}')
+        return jsonify({'error': 'Failed to create certificate'}), 500
 
 
 @app.route('/api/sign-message', methods=['POST'])
@@ -276,8 +284,11 @@ def sign_message():
             'message_length': len(message)
         })
         
+    except ValueError as e:
+        return jsonify({'error': 'Invalid input parameters'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Sign message error: {str(e)}')
+        return jsonify({'error': 'Failed to sign message'}), 500
 
 
 @app.route('/api/verify-signature', methods=['POST'])
@@ -337,9 +348,17 @@ def verify_signature():
             'algorithm': 'RSA-PSS with SHA-512'
         })
         
+    except ValueError as e:
+        return jsonify({'error': 'Invalid input parameters'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f'Verify signature error: {str(e)}')
+        return jsonify({'error': 'Failed to verify signature'}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Get configuration from environment variables
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_PORT', '5000'))
+    
+    app.run(debug=debug_mode, host=host, port=port)
